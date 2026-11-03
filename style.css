@@ -1,0 +1,694 @@
+/* ==========================================================================
+   웹 명함 기본 설정 & CSS 변수 (다크/라이트 모드 지원)
+   ========================================================================== */
+:root {
+  /* 라이트 모드 (기본) */
+  --bg-gradient: radial-gradient(circle at 10% 20%, #f1f5f9 0%, #e2e8f0 90.2%);
+  --card-bg: rgba(255, 255, 255, 0.82);
+  --card-border: rgba(255, 255, 255, 0.9);
+  --card-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.18), 
+                 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+  
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-sub: #475569;
+  
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+  --accent-cyan: #06b6d4;
+  --accent-pink: #ec4899;
+  
+  --item-bg: rgba(248, 250, 252, 0.85);
+  --item-border: rgba(226, 232, 240, 0.8);
+  --item-hover-bg: #ffffff;
+  
+  --tag-bg: #f1f5f9;
+  --tag-text: #4338ca;
+  --tag-border: #e0e7ff;
+  
+  --blob-1: rgba(99, 102, 241, 0.28);
+  --blob-2: rgba(6, 182, 212, 0.25);
+  --blob-3: rgba(236, 72, 153, 0.2);
+
+  --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --bg-gradient: radial-gradient(circle at 10% 20%, #0b0f19 0%, #030712 100%);
+  --card-bg: rgba(17, 24, 39, 0.78);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.7),
+                 0 0 30px 1px rgba(99, 102, 241, 0.25);
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-sub: #cbd5e1;
+  
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-light: rgba(99, 102, 241, 0.18);
+  
+  --item-bg: rgba(30, 41, 59, 0.6);
+  --item-border: rgba(51, 65, 85, 0.7);
+  --item-hover-bg: rgba(51, 65, 85, 0.85);
+  
+  --tag-bg: rgba(99, 102, 241, 0.15);
+  --tag-text: #a5b4fc;
+  --tag-border: rgba(99, 102, 241, 0.3);
+  
+  --blob-1: rgba(99, 102, 241, 0.2);
+  --blob-2: rgba(6, 182, 212, 0.18);
+  --blob-3: rgba(236, 72, 153, 0.15);
+}
+
+/* ==========================================================================
+   리셋 및 전역 스타일
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow-x: hidden;
+  padding: 24px 16px;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* ==========================================================================
+   동적 배경 오로라 블롭 (Blobs)
+   ========================================================================== */
+.bg-blobs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.85;
+  animation: floatBlobs 16s ease-in-out infinite alternate;
+}
+
+.blob-1 {
+  width: 450px;
+  height: 450px;
+  background: var(--blob-1);
+  top: -100px;
+  left: -80px;
+}
+
+.blob-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--blob-2);
+  bottom: -80px;
+  right: -60px;
+  animation-delay: -5s;
+}
+
+.blob-3 {
+  width: 320px;
+  height: 320px;
+  background: var(--blob-3);
+  top: 45%;
+  left: 55%;
+  animation-delay: -9s;
+}
+
+@keyframes floatBlobs {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.1); }
+  100% { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+/* ==========================================================================
+   카드 컨테이너 (3D 원근감)
+   ========================================================================== */
+.card-container {
+  position: relative;
+  z-index: 10;
+  perspective: 1200px;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* 테마 토글 버튼 (플로팅) */
+.theme-toggle {
+  position: absolute;
+  top: -16px;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-main);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: var(--transition-smooth);
+  z-index: 20;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px) rotate(15deg);
+  color: var(--primary);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* ==========================================================================
+   명함 본체 (Card)
+   ========================================================================== */
+.card {
+  position: relative;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  padding: 32px 28px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+/* 홀로그램 빛 반사 효과 (마우스 무브 연동) */
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+[data-theme="dark"] .card-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+}
+
+/* 상단 헤더: 상태 표시 뱃지 */
+.card-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  z-index: 2;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  letter-spacing: -0.2px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.badge-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   캐릭터 아바타 영역 (SVG)
+   ========================================================================== */
+.avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin-bottom: 18px;
+  z-index: 2;
+}
+
+.avatar-glow {
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(135deg, #6366f1, #06b6d4, #ec4899);
+  border-radius: 50%;
+  filter: blur(10px);
+  opacity: 0.45;
+  animation: rotateGrad 8s linear infinite;
+}
+
+@keyframes rotateGrad {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.avatar-svg-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+}
+
+[data-theme="dark"] .avatar-svg-container {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #1e293b;
+}
+
+[data-theme="dark"] .avatar-bg-circle {
+  fill: #1e293b;
+}
+
+.developer-avatar {
+  width: 100%;
+  height: 100%;
+}
+
+/* 캐릭터 눈 깜빡임 애니메이션 */
+.eyes {
+  transform-origin: 100px 90px;
+  animation: blinkEyes 4.5s infinite ease-in-out;
+}
+
+@keyframes blinkEyes {
+  0%, 96%, 100% { transform: scaleY(1); }
+  98% { transform: scaleY(0.1); }
+}
+
+/* 둥둥 뜨는 코딩 아이콘들 */
+.floating-icons text {
+  animation: floatTag 3s ease-in-out infinite alternate;
+}
+.floating-icons text:nth-child(2) {
+  animation-delay: -1s;
+}
+.floating-icons text:nth-child(3) {
+  animation-delay: -2s;
+}
+
+@keyframes floatTag {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* ==========================================================================
+   프로필 정보 텍스트
+   ========================================================================== */
+.profile-info {
+  text-align: center;
+  margin-bottom: 16px;
+  z-index: 2;
+}
+
+.name {
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.en-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.role {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.role i {
+  font-size: 0.95rem;
+}
+
+.bio {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-sub);
+  margin-top: 10px;
+  word-break: keep-all;
+  padding: 0 8px;
+}
+
+/* ==========================================================================
+   기술 스택 태그 (Tech Tags)
+   ========================================================================== */
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 22px;
+  z-index: 2;
+}
+
+.tag {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  border: 1px solid var(--tag-border);
+  border-radius: 12px;
+  transition: var(--transition-smooth);
+}
+
+.tag:hover {
+  transform: translateY(-2px);
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+/* ==========================================================================
+   연락처 정보 리스트
+   ========================================================================== */
+.contact-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  z-index: 2;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--item-bg);
+  border: 1px solid var(--item-border);
+  border-radius: 14px;
+  transition: var(--transition-smooth);
+}
+
+.contact-item:hover {
+  background: var(--item-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.contact-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.contact-icon.email {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+}
+
+.contact-icon.phone {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.contact-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.contact-text .label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.contact-text .value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-main);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+.contact-text .value:hover {
+  color: var(--primary);
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   액션 버튼 (전화걸기 / 메일보내기)
+   ========================================================================== */
+.card-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+  z-index: 2;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border: none;
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(99, 102, 241, 0.35);
+}
+
+.secondary-btn {
+  background: var(--item-bg);
+  color: var(--text-main);
+  border: 1px solid var(--item-border);
+}
+
+.secondary-btn:hover {
+  background: var(--item-hover-bg);
+  transform: translateY(-2px);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* ==========================================================================
+   하단 유틸리티 (연락처 저장, 명함 공유)
+   ========================================================================== */
+.footer-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+  z-index: 2;
+}
+
+.util-btn {
+  background: transparent;
+  border: 1px dashed var(--item-border);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition-smooth);
+}
+
+.util-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* 카드 하단 푸터 */
+.card-footer {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  opacity: 0.7;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   토스트 알림창
+   ========================================================================== */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.toast i {
+  color: #10b981;
+}
+
+/* ==========================================================================
+   모바일 최적화 미디어 쿼리
+   ========================================================================== */
+@media (max-width: 480px) {
+  body {
+    padding: 16px 12px;
+  }
+  
+  .card {
+    padding: 26px 20px;
+    border-radius: 24px;
+  }
+
+  .name {
+    font-size: 1.45rem;
+  }
+
+  .role {
+    font-size: 0.95rem;
+  }
+
+  .bio {
+    font-size: 0.82rem;
+  }
+
+  .contact-item {
+    padding: 10px 12px;
+  }
+
+  .action-btn {
+    padding: 10px 12px;
+    font-size: 0.86rem;
+  }
+}
+
